@@ -1,9 +1,6 @@
 #ifndef SWITCH_PROVIDER_BASE_
 #define SWITCH_PROVIDER_BASE_
 
-#include <memory>
-#include "grpcpp/grpcpp.h"
-#include "grpcpp/server_context.h"
 #include "p4/v1/p4runtime.grpc.pb.h"
 #include "absl/status/statusor.h"
 #include "absl/status/status.h"
