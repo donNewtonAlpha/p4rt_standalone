@@ -36,6 +36,7 @@ p4::v1::StreamMessageResponse GenerateErrorResponse(
 P4RuntimeImpl::P4RuntimeImpl(
     std::unique_ptr<switch_provider::SwitchProviderBase> switch_provider):
   switch_provider_(std::move(switch_provider)){
+  switch_provider_->AddChannel(&chan_);
 }
 
 grpc::Status P4RuntimeImpl::Write(grpc::ServerContext* context,

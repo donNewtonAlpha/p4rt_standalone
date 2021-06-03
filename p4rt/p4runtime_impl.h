@@ -10,6 +10,10 @@
 
 namespace p4rt{ 
   class P4RuntimeImpl final : public p4::v1::P4Runtime::Service{
+    private:
+      std::unique_ptr<switch_provider::SwitchProviderBase> switch_provider_;
+      std::unique_ptr<SdnControllerManager> controller_manager_;
+      Channel<std::shared_ptr<p4::v1::PacketIn>>  chan_ = Channel<std::shared_ptr<p4::v1::PacketIn>>();
     public: 
       P4RuntimeImpl(std::unique_ptr<switch_provider::SwitchProviderBase> switch_provider);
       ~P4RuntimeImpl() = default;
@@ -34,9 +38,6 @@ namespace p4rt{
           const p4::v1::GetForwardingPipelineConfigRequest* request,
           p4::v1::GetForwardingPipelineConfigResponse* response);
 
-    private:
-      std::unique_ptr<switch_provider::SwitchProviderBase> switch_provider_;
-      std::unique_ptr<SdnControllerManager> controller_manager_;
   };
 
 }
