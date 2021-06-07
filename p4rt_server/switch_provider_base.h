@@ -30,7 +30,7 @@ namespace switch_provider{
           const p4::v1::ReadRequest * request);
       virtual absl::Status SendPacketOut(const p4::v1::PacketOut& packet);
       virtual absl::Status SetForwardingPipelineConfig(
-          const p4::config::v1::P4Info& p4info);
+          const p4::v1::ForwardingPipelineConfig);
       virtual absl::StatusOr<p4::v1::ForwardingPipelineConfig>  GetForwardingPipelineConfig();
 
   };

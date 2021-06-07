@@ -82,7 +82,7 @@ grpc::Status P4RtServer::Read(
     }   
 
     auto response_status =
-        switch_provider_->DoRead(request );
+        switch_provider_->DoRead(request);
     if (!response_status.ok()) {
       LOG(WARNING) << "Read failure: " << response_status.status();
       return grpc::Status(
@@ -205,7 +205,7 @@ grpc::Status P4RtServer::SetForwardingPipelineConfig(
              "supported for "
           << "SetForwardingPipelineConfig.");
     }
-    auto status = switch_provider_->SetForwardingPipelineConfig(request->config().p4info());
+    auto status = switch_provider_->SetForwardingPipelineConfig(request->config());
     return gutil::AbslStatusToGrpcStatus(status);
 
 #ifdef __EXCEPTIONS
