@@ -12,7 +12,7 @@
 
 namespace switch_provider{
   class SwitchProviderBase{
-    private:
+    protected:
       Channel<std::shared_ptr<p4::v1::PacketIn>>  * chan_;
     public:
       SwitchProviderBase();
