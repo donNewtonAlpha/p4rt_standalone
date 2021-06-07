@@ -1,5 +1,5 @@
-#ifndef P4RUNTIME_IMPL_H_
-#define P4RUNTIME_IMPL_H_
+#ifndef P4RT_SERVER_H_
+#define P4RT_SERVER_H_
 
 #include <memory>
 #include "switch_provider_base.h"
@@ -8,15 +8,15 @@
 #include "grpcpp/server_context.h"
 #include "p4/v1/p4runtime.grpc.pb.h"
 
-namespace p4rt{ 
-  class P4RuntimeImpl final : public p4::v1::P4Runtime::Service{
+namespace p4rt_server{ 
+  class P4RtServer final : public p4::v1::P4Runtime::Service{
     private:
       std::unique_ptr<switch_provider::SwitchProviderBase> switch_provider_;
       std::unique_ptr<SdnControllerManager> controller_manager_;
       Channel<std::shared_ptr<p4::v1::PacketIn>>  chan_ = Channel<std::shared_ptr<p4::v1::PacketIn>>();
     public: 
-      P4RuntimeImpl(std::unique_ptr<switch_provider::SwitchProviderBase> switch_provider);
-      ~P4RuntimeImpl() = default;
+      P4RtServer(std::unique_ptr<switch_provider::SwitchProviderBase> switch_provider);
+      ~P4RtServer() = default;
       
       grpc::Status Write(grpc::ServerContext* context,
                                     const p4::v1::WriteRequest* request,
@@ -42,4 +42,4 @@ namespace p4rt{
 
 }
 
-#endif //ifndef P4RUNTIME_IMPL_H_
+#endif //ifndef P4RT_SERVER_H_

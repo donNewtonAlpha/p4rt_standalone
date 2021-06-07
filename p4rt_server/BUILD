@@ -1,7 +1,7 @@
 cc_library(
-    name = "p4runtime_impl",
-    srcs = ["p4runtime_impl.cc","sdn_controller_manager.cc"],
-    hdrs = ["switch_provider_base.h","p4runtime_impl.h","sdn_controller_manager.h","channel.h"],
+    name = "p4rt_server",
+    srcs = ["p4rt_server.cc","sdn_controller_manager.cc"],
+    hdrs = ["switch_provider_base.h","p4rt_server.h","sdn_controller_manager.h","channel.h"],
     visibility = ["//visibility:public"],
     deps = [
         "//gutil:status",

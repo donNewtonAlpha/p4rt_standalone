@@ -22,7 +22,7 @@
 #include "p4/v1/p4runtime.grpc.pb.h"
 #include "p4/v1/p4runtime.pb.h"
 
-namespace p4rt{
+namespace p4rt_server{
 
 // A connection between a controller and p4rt server.
 class SdnConnection {

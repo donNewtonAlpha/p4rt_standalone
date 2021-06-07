@@ -20,7 +20,7 @@
 #include "glog/logging.h"
 #include "p4/v1/p4runtime.pb.h"
 
-namespace p4rt{
+namespace p4rt_server{
 namespace {
 
 std::string PrettyPrintRoleName(const absl::optional<std::string>& name) {

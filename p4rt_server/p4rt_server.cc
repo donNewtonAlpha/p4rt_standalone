@@ -1,5 +1,5 @@
 #include <memory>
-#include "p4runtime_impl.h"
+#include "p4rt_server.h"
 #include "sdn_controller_manager.h"
 #include "grpcpp/grpcpp.h"
 #include "grpcpp/server_context.h"
@@ -10,7 +10,7 @@
 
 
 
-namespace p4rt{
+namespace p4rt_server{
 namespace{
   // Generates a StreamMessageResponse error based on an absl::Status.
 p4::v1::StreamMessageResponse GenerateErrorResponse(absl::Status status) {
@@ -33,13 +33,13 @@ p4::v1::StreamMessageResponse GenerateErrorResponse(
 }
 
 
-P4RuntimeImpl::P4RuntimeImpl(
+P4RtServer::P4RtServer(
     std::unique_ptr<switch_provider::SwitchProviderBase> switch_provider):
   switch_provider_(std::move(switch_provider)){
   switch_provider_->AddChannel(&chan_);
 }
 
-grpc::Status P4RuntimeImpl::Write(grpc::ServerContext* context,
+grpc::Status P4RtServer::Write(grpc::ServerContext* context,
                                     const p4::v1::WriteRequest* request,
                                     p4::v1::WriteResponse* response) {
   #ifdef __EXCEPTIONS
@@ -66,7 +66,7 @@ grpc::Status P4RuntimeImpl::Write(grpc::ServerContext* context,
   
 }
 
-grpc::Status P4RuntimeImpl::Read(
+grpc::Status P4RtServer::Read(
     grpc::ServerContext* context, const p4::v1::ReadRequest* request,
     grpc::ServerWriter<p4::v1::ReadResponse>* response_writer) {
 #ifdef __EXCEPTIONS
@@ -102,7 +102,7 @@ grpc::Status P4RuntimeImpl::Read(
   
 }
 
-grpc::Status P4RuntimeImpl::StreamChannel(
+grpc::Status P4RtServer::StreamChannel(
     grpc::ServerContext* context,
     grpc::ServerReaderWriter<p4::v1::StreamMessageResponse,
                              p4::v1::StreamMessageRequest>* stream) {
@@ -180,7 +180,7 @@ grpc::Status P4RuntimeImpl::StreamChannel(
  
 }
 
-grpc::Status P4RuntimeImpl::SetForwardingPipelineConfig(
+grpc::Status P4RtServer::SetForwardingPipelineConfig(
     grpc::ServerContext* context,
     const p4::v1::SetForwardingPipelineConfigRequest* request,
     p4::v1::SetForwardingPipelineConfigResponse* response) {
@@ -219,7 +219,7 @@ grpc::Status P4RuntimeImpl::SetForwardingPipelineConfig(
 }
 
 
-grpc::Status P4RuntimeImpl::GetForwardingPipelineConfig(
+grpc::Status P4RtServer::GetForwardingPipelineConfig(
     grpc::ServerContext* context,
     const p4::v1::GetForwardingPipelineConfigRequest* request,
     p4::v1::GetForwardingPipelineConfigResponse* response) {
@@ -249,5 +249,5 @@ grpc::Status P4RuntimeImpl::GetForwardingPipelineConfig(
 #endif
 }
 
-}//namespace p4rt
+}//namespace p4rt_server
 

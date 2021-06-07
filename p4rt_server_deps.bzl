@@ -11,7 +11,7 @@ Please read carefully before adding new dependencies:
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-def p4rt_deps():
+def p4rt_server_deps():
     """Sets up 3rd party workspaces needed to build PINS infrastructure."""
     if not native.existing_rule("com_github_grpc_grpc"):
         http_archive(

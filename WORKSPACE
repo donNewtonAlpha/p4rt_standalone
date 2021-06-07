@@ -1,7 +1,7 @@
 workspace(name = "com_github_p4lang_p4rt")
 
-load("p4rt_deps.bzl", "p4rt_deps")
-p4rt_deps()
+load("p4rt_server_deps.bzl", "p4rt_server_deps")
+p4rt_server_deps()
 
 # -- Load Rules Foreign CC -----------------------------------------------------
 
