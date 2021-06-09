@@ -30,13 +30,25 @@ p4::v1::StreamMessageResponse GenerateErrorResponse(
       packet;
   return response;
 }
+void ListenForPacketIn(P4RtServer *p4rt_server){
+  for (; true;){
+    auto response = p4rt_server->get();
+    //TODO - need to sort out roles
+    //controller_manager_->SendStreamMessageToPrimary(
+    //  P4RUNTIME_ROLE_SDN_CONTROLLER, response);
+    p4rt_server->SendPacketIn(absl::nullopt, *response);
+  }
 }
-
+void init(P4RtServer *p4rt_server){
+  std::thread(ListenForPacketIn, p4rt_server);
+}
+}
 
 P4RtServer::P4RtServer(
     std::unique_ptr<switch_provider::SwitchProviderBase> switch_provider):
   switch_provider_(std::move(switch_provider)){
   switch_provider_->AddChannel(&chan_);
+  init(this);
 }
 
 grpc::Status P4RtServer::Write(grpc::ServerContext* context,

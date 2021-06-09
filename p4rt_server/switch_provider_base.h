@@ -13,15 +13,16 @@
 namespace switch_provider{
   class SwitchProviderBase{
     protected:
-      Channel<std::shared_ptr<p4::v1::PacketIn>>  * chan_;
+      Channel<std::shared_ptr<p4::v1::StreamMessageResponse>>  * chan_;
     public:
-      void AddChannel(Channel<std::shared_ptr<p4::v1::PacketIn>> * chan){
+      void AddChannel(Channel<std::shared_ptr<p4::v1::StreamMessageResponse>> * chan){
         chan_=chan;
       }
-      void SendPacketIn (std::shared_ptr<p4::v1::PacketIn> packet_in){
-        chan_->put(packet_in);
+      void SendPacketIn (std::shared_ptr<p4::v1::StreamMessageResponse> response){
+        chan_->put(response);
       }
       SwitchProviderBase(){}
+
       virtual ~SwitchProviderBase(){}
       
       virtual absl::Status DoWrite(const p4::v1::WriteRequest * request)=0;
