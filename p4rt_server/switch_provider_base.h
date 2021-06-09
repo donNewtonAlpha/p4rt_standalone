@@ -15,23 +15,23 @@ namespace switch_provider{
     protected:
       Channel<std::shared_ptr<p4::v1::PacketIn>>  * chan_;
     public:
-      SwitchProviderBase();
-      
       void AddChannel(Channel<std::shared_ptr<p4::v1::PacketIn>> * chan){
         chan_=chan;
       }
       void SendPacketIn (std::shared_ptr<p4::v1::PacketIn> packet_in){
         chan_->put(packet_in);
       }
-
-     
-      virtual absl::Status DoWrite(const p4::v1::WriteRequest * request);
+      SwitchProviderBase(){}
+      virtual ~SwitchProviderBase(){}
+      
+      virtual absl::Status DoWrite(const p4::v1::WriteRequest * request)=0;
       virtual absl::StatusOr<p4::v1::ReadResponse> DoRead(
-          const p4::v1::ReadRequest * request);
-      virtual absl::Status SendPacketOut(const p4::v1::PacketOut& packet);
+          const p4::v1::ReadRequest * request)=0;
+      virtual absl::Status SendPacketOut(const p4::v1::PacketOut& packet)=0;
       virtual absl::Status SetForwardingPipelineConfig(
-          const p4::v1::ForwardingPipelineConfig);
-      virtual absl::StatusOr<p4::v1::ForwardingPipelineConfig>  GetForwardingPipelineConfig();
+          const p4::v1::ForwardingPipelineConfig)=0;
+      virtual absl::StatusOr<p4::v1::ForwardingPipelineConfig>  
+        GetForwardingPipelineConfig()=0;
 
   };
 }
