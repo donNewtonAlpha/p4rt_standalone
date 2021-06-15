@@ -48,6 +48,7 @@ P4RtServer::P4RtServer(
     std::unique_ptr<switch_provider::SwitchProviderBase> switch_provider):
   switch_provider_(std::move(switch_provider)){
   switch_provider_->AddChannel(&chan_);
+  LOG(ERROR) << "P4RtServer::P4RtServer calling init";
   init(this);
 }
 
