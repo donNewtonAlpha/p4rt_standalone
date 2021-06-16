@@ -49,6 +49,7 @@ P4RtServer::P4RtServer(
   switch_provider_(std::move(switch_provider)){
   LOG(ERROR) << "P4RtServer::P4RtServer calling init";
   switch_provider_->AddChannel(&chan_);
+  controller_manager_ = = absl::make_unique<SdnControllerManager>(); 
   //init(this);
 }
 
