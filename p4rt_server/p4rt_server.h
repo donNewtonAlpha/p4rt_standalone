@@ -14,9 +14,7 @@ namespace p4rt_server{
   class P4RtServer final : public p4::v1::P4Runtime::Service{
     private:
       std::unique_ptr<switch_provider::SwitchProviderBase> switch_provider_;
-      std::unique_ptr<SdnControllerManager> controller_manager_;
-      Channel<std::shared_ptr<p4::v1::StreamMessageResponse>>  chan_ = 
-            Channel<std::shared_ptr<p4::v1::StreamMessageResponse>>();
+      std::shared_ptr<SdnControllerManager> controller_manager_;
       
 
     public:
@@ -42,7 +40,6 @@ namespace p4rt_server{
       grpc::Status GetForwardingPipelineConfig( grpc::ServerContext* context,
           const p4::v1::GetForwardingPipelineConfigRequest* request,
           p4::v1::GetForwardingPipelineConfigResponse* response);
-      std::shared_ptr<p4::v1::StreamMessageResponse> get() { return chan_.get(); }
       bool SendPacketIn(const absl::optional<std::string>& role_name,
                         const p4::v1::StreamMessageResponse& response){
         return controller_manager_->SendStreamMessageToPrimary(role_name, response);

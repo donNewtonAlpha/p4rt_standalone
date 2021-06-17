@@ -7,20 +7,21 @@
 #include "p4/v1/p4runtime.grpc.pb.h"
 #include "absl/status/statusor.h"
 #include "absl/status/status.h"
+#include "sdn_controller_manager.h"
 
-#include "channel.h"
 
 namespace switch_provider{
   class SwitchProviderBase{
     protected:
-      Channel<std::shared_ptr<p4::v1::StreamMessageResponse>>  * chan_;
+      std::shared_ptr<p4rt_server::SdnControllerManager> controller_manager_;
+      void SendPacketIn (std::string role_name, std::shared_ptr<p4::v1::StreamMessageResponse> response){
+        controller_manager_->SendStreamMessageToPrimary(role_name, *response);
+      }
     public:
-      void AddChannel(Channel<std::shared_ptr<p4::v1::StreamMessageResponse>> * chan){
-        chan_=chan;
+      void AddSdnController(std::shared_ptr<p4rt_server::SdnControllerManager> controller_manager){
+         controller_manager_=controller_manager;
       }
-      void SendPacketIn (std::shared_ptr<p4::v1::StreamMessageResponse> response){
-        chan_->put(response);
-      }
+
       SwitchProviderBase(){}
 
       virtual ~SwitchProviderBase(){}

@@ -13,44 +13,32 @@
 namespace p4rt_server{
 namespace{
   // Generates a StreamMessageResponse error based on an absl::Status.
-p4::v1::StreamMessageResponse GenerateErrorResponse(absl::Status status) {
-  grpc::Status grpc_status = gutil::AbslStatusToGrpcStatus(status);
-  p4::v1::StreamMessageResponse response;
-  auto error = response.mutable_error();
-  error->set_canonical_code(grpc_status.error_code());
-  error->set_message(grpc_status.error_message());
-  return response;
-}
+   p4::v1::StreamMessageResponse GenerateErrorResponse(absl::Status status) {
+     grpc::Status grpc_status = gutil::AbslStatusToGrpcStatus(status);
+     p4::v1::StreamMessageResponse response;
+     auto error = response.mutable_error();
+     error->set_canonical_code(grpc_status.error_code());
+     error->set_message(grpc_status.error_message());
+     return response;
+   }
 
-// Generates StreamMessageResponse with errors for PacketIO
-p4::v1::StreamMessageResponse GenerateErrorResponse(
-    absl::Status status, const p4::v1::PacketOut& packet) {
-  p4::v1::StreamMessageResponse response = GenerateErrorResponse(status);
-  *response.mutable_error()->mutable_packet_out()->mutable_packet_out() =
-      packet;
-  return response;
-}
-void ListenForPacketIn(P4RtServer *p4rt_server){
-  for (; true;){
-    auto response = p4rt_server->get();
-    //TODO - need to sort out roles
-    //controller_manager_->SendStreamMessageToPrimary(
-    //  P4RUNTIME_ROLE_SDN_CONTROLLER, response);
-    p4rt_server->SendPacketIn(absl::nullopt, *response);
-  }
-}
-void init(P4RtServer *p4rt_server){
-  std::thread(ListenForPacketIn, p4rt_server);
-}
+   // Generates StreamMessageResponse with errors for PacketIO
+   p4::v1::StreamMessageResponse GenerateErrorResponse(
+       absl::Status status, const p4::v1::PacketOut& packet) {
+     p4::v1::StreamMessageResponse response = GenerateErrorResponse(status);
+     *response.mutable_error()->mutable_packet_out()->mutable_packet_out() =
+         packet;
+     return response;
+   }
 }
 
 P4RtServer::P4RtServer(
     std::unique_ptr<switch_provider::SwitchProviderBase> switch_provider):
   switch_provider_(std::move(switch_provider)){
   LOG(ERROR) << "P4RtServer::P4RtServer calling init";
-  switch_provider_->AddChannel(&chan_);
-  controller_manager_ = absl::make_unique<SdnControllerManager>(); 
-  init(this);
+  controller_manager_ = std::make_shared<SdnControllerManager>(); 
+  switch_provider_->AddSdnController(controller_manager_);
+
 }
 
 grpc::Status P4RtServer::Write(grpc::ServerContext* context,
