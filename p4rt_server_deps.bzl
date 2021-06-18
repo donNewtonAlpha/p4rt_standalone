@@ -1,13 +1,3 @@
-"""Third party dependencies.
-
-Please read carefully before adding new dependencies:
-- Any dependency can break all of pins-infra. Please be mindful of that before
-  adding new dependencies. Try to stick to stable versions of widely used libraries.
-  Do not depend on private repositories and forks.
-- Fix dependencies to a specific version or commit, so upstream changes cannot break
-  pins-infra. Prefer releases over arbitrary commits when both are available.
-"""
-
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 

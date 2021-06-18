@@ -1,11 +1,19 @@
+/*
+ * Copyright 2020 Google LLC
+ * Copyright 2020-present Open Networking Foundation
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #ifndef P4RT_SERVER_H_
 #define P4RT_SERVER_H_
+
+#include "switch_provider_base.h"
+#include "sdn_controller_manager.h"
 
 #include <memory>
 #include <thread>
 
-#include "switch_provider_base.h"
-#include "sdn_controller_manager.h"
 #include "grpcpp/grpcpp.h"
 #include "grpcpp/server_context.h"
 #include "p4/v1/p4runtime.grpc.pb.h"

@@ -1,12 +1,21 @@
-#include <memory>
+/*
+ * Copyright 2020 Google LLC
+ * Copyright 2020-present Open Networking Foundation
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #include "p4rt_server.h"
 #include "sdn_controller_manager.h"
+
+#include <memory>
+
+#include "absl/status/status.h"
+#include "glog/logging.h"
 #include "grpcpp/grpcpp.h"
 #include "grpcpp/server_context.h"
-#include "glog/logging.h"
-#include "p4/v1/p4runtime.grpc.pb.h"
-#include "absl/status/status.h"
 #include "gutil/status.h"
+#include "p4/v1/p4runtime.grpc.pb.h"
 
 
 
@@ -38,9 +47,12 @@ P4RtServer::P4RtServer(
   LOG(ERROR) << "P4RtServer::P4RtServer calling init";
   controller_manager_ = std::make_shared<SdnControllerManager>(); 
   switch_provider_->AddSdnController(controller_manager_);
-
 }
 
+/*
+ * P4RtServer::Write
+ * Handles write requests from P4Runtime Controller application
+ */
 grpc::Status P4RtServer::Write(grpc::ServerContext* context,
                                     const p4::v1::WriteRequest* request,
                                     p4::v1::WriteResponse* response) {
@@ -53,9 +65,6 @@ grpc::Status P4RtServer::Write(grpc::ServerContext* context,
       if (!connection_status.ok()) {
         return connection_status;
       }
-      //switch_provider_.DoWrite(request);
-
-      // We can only program the flow if the forwarding pipeline has been set.
       auto result = switch_provider_->DoWrite(request);
       return gutil::AbslStatusToGrpcStatus(result);
   #ifdef __EXCEPTIONS
@@ -65,9 +74,12 @@ grpc::Status P4RtServer::Write(grpc::ServerContext* context,
       LOG(FATAL) << "Unknown exception caught in " << __func__;
     }
   #endif
-  
 }
 
+/*
+ * P4RtServer::Read
+ * Handles read requests from P4Runtime Controller application
+ */
 grpc::Status P4RtServer::Read(
     grpc::ServerContext* context, const p4::v1::ReadRequest* request,
     grpc::ServerWriter<p4::v1::ReadResponse>* response_writer) {
@@ -83,8 +95,7 @@ grpc::Status P4RtServer::Read(
                           "ReadResponse writer cannot be a nullptr.");
     }   
 
-    auto response_status =
-        switch_provider_->DoRead(request);
+    auto response_status = switch_provider_->DoRead(request);
     if (!response_status.ok()) {
       LOG(WARNING) << "Read failure: " << response_status.status();
       return grpc::Status(
@@ -104,6 +115,11 @@ grpc::Status P4RtServer::Read(
   
 }
 
+/*
+ * P4RtServer::StreamChannel
+ * Sets up grpc stream channel for bi-directional communication
+ * Between the P4Runtime Controller application and this server
+ */
 grpc::Status P4RtServer::StreamChannel(
     grpc::ServerContext* context,
     grpc::ServerReaderWriter<p4::v1::StreamMessageResponse,
@@ -167,7 +183,6 @@ grpc::Status P4RtServer::StreamChannel(
                                       << "Stream update type is not supported."));
           LOG(ERROR) << "Received unhandled stream channel message: "
                        << request.DebugString();
-
       }
     }//while
     controller_manager_->Disconnect(sdn_connection.get());
@@ -182,6 +197,10 @@ grpc::Status P4RtServer::StreamChannel(
  
 }
 
+/*
+ * P4RtServer::SetForwardingPipelineConfig
+ * Handles P4info.txt pushes from P4Runtime controller application
+ */
 grpc::Status P4RtServer::SetForwardingPipelineConfig(
     grpc::ServerContext* context,
     const p4::v1::SetForwardingPipelineConfigRequest* request,
@@ -220,7 +239,11 @@ grpc::Status P4RtServer::SetForwardingPipelineConfig(
   
 }
 
-
+/*
+ * P4RtServer::GetForwardingPipelineConfig
+ * Returns P4info.txt to P4Runtime controller application
+ */
+grpc::Status P4RtServer::SetForwardingPipelineConfig(
 grpc::Status P4RtServer::GetForwardingPipelineConfig(
     grpc::ServerContext* context,
     const p4::v1::GetForwardingPipelineConfigRequest* request,
