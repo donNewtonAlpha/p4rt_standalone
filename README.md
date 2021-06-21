@@ -49,3 +49,15 @@ Provide a platform agnostic implementation of P4Runtime Server suitable for embe
   LOG(INFO) << "Server listening on " << kServerAddress << ".";
   server->Wait();
 ```
+### Building Library
+```
+bazel build //p4rt_server:p4rt_server
+```
+### Pulling in as dependency for bazel build of switch
+```
+git_repository(
+        name = "p4rt_standalone",
+        commit = "$CURRENT_COMMIT_TO_USE",
+        remote = "http://github.com/donNewtonAlpha/p4rt_standalone.git",
+    )
+```
