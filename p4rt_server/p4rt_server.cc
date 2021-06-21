@@ -243,7 +243,6 @@ grpc::Status P4RtServer::SetForwardingPipelineConfig(
  * P4RtServer::GetForwardingPipelineConfig
  * Returns P4info.txt to P4Runtime controller application
  */
-grpc::Status P4RtServer::SetForwardingPipelineConfig(
 grpc::Status P4RtServer::GetForwardingPipelineConfig(
     grpc::ServerContext* context,
     const p4::v1::GetForwardingPipelineConfigRequest* request,
