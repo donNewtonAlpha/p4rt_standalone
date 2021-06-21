@@ -49,6 +49,7 @@ Provide a platform agnostic implementation of P4Runtime Server suitable for embe
   LOG(INFO) << "Server listening on " << kServerAddress << ".";
   server->Wait();
 ```
+## Build Instructions
 ### Building Library
 ```
 bazel build //p4rt_server:p4rt_server
