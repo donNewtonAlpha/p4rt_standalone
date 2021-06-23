@@ -17,15 +17,14 @@ Provide a platform agnostic implementation of P4Runtime Server suitable for embe
                         const p4::v1::ForwardingPipelineConfig);
           absl::StatusOr<p4::v1::ForwardingPipelineConfig>  GetForwardingPipelineConfig();
       //END INHERITED
+      //Subclass specific initialization here
       ...
       };
   ```
 ### Construct Sub-class 
 
  ```
-     auto provider = std::make_unique<MySwitchProvider>(...){
-       //Subclass specific initialization here
-     }
+     auto provider = std::make_unique<MySwitchProvider>(...);
 ```
 ### Construct P4RtServer by moving in unique_ptr to Switch Provider sub-class
 ```  
