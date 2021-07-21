@@ -85,11 +85,17 @@ class SdnControllerManager {
       ABSL_LOCKS_EXCLUDED(lock_);
 
  private:
-  // Goes through the current list of active connections for a role and compares
-  // their election ID values with the current primary election ID. If a new
-  // primary ID is found it will return true. Otherwise it will return false.
-  bool UpdatePrimaryConnectionState(
-      const absl::optional<std::string>& role_name)
+    // Goes through the current list of active connections, and determines if
+  // there has been a change to the primary connection. If there is a change to
+  // the primary connection it will return true. Otherwise it will return false.
+  //
+  // If the election_id argument equals the `election_id_past` for the role this
+  // methods will return true (e.g. if the primary connection was disconneded
+  // and is now reconnecting). If the current primary connection sends an
+  // update, without changing its election ID, this method should NOT be called.
+  bool UpdateToPrimaryConnectionState(
+      const absl::optional<std::string>& role_name,
+      const absl::optional<absl::uint128>& election_id)
       ABSL_EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Goes through the current list of active connections, and returns if one of
@@ -134,7 +140,7 @@ class SdnControllerManager {
 
   // We maintain a map of the highest election IDs that have been selected for
   // the primary connection of a role. Once an election ID is set all new
-  // primary connections for that rolue must use an election ID that is >= in
+  // primary connections for that role must use an election ID that is >= in
   // value.
   //
   // key:   role_name   (no value indicaates the default/root role)
@@ -142,7 +148,7 @@ class SdnControllerManager {
   //                     connection)
   absl::flat_hash_map<absl::optional<std::string>,
                       absl::optional<absl::uint128>>
-      primary_election_id_map_ ABSL_GUARDED_BY(lock_);
+      election_id_past_by_role_ ABSL_GUARDED_BY(lock_);
 };
 
 }  // namespace p4rt_app
