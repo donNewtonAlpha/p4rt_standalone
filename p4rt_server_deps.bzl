@@ -1,6 +1,9 @@
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
+P4RUNTIME_VER = "1.3.0"
+P4RUNTIME_SHA = "20b187a965fab78df9b8253da14166b8666938a82a2aeea16c6f9abaa934bdcb"
+
 def p4rt_server_deps():
     """Sets up 3rd party workspaces needed to build PINS infrastructure."""
     if not native.existing_rule("com_github_grpc_grpc"):
@@ -88,16 +91,14 @@ def p4rt_server_deps():
             strip_prefix = "p4c-557b77f8c41fc5ee1158710eda1073d84f5acf53",
             sha256 = "c0b39fe2a3f394a87ff8fd055df4b5f1d19790bfa27a6cff68f484380746363e",
         )
-    if not native.existing_rule("com_github_p4lang_p4runtime"):
-        # We frequently need bleeding-edge, unreleased version of P4Runtime, so we use a commit
-        # rather than a release.
+    if "com_github_p4lang_p4runtime" not in native.existing_rules():
         http_archive(
             name = "com_github_p4lang_p4runtime",
-            # 0332e is the newest commit on master as of 2021-04-29.
-            urls = ["https://github.com/p4lang/p4runtime/archive/0332e999c24c6bb6795181ad407cbb759bfa827d.zip"],
-            strip_prefix = "p4runtime-0332e999c24c6bb6795181ad407cbb759bfa827d/proto",
-            sha256 = "50a2251a5250bcfba3037fb7712e232b3581684a7cbd983840fc97363243921f",
+            urls = ["https://github.com/p4lang/p4runtime/archive/v%s.zip" % P4RUNTIME_VER],
+            strip_prefix = "p4runtime-%s/proto" % P4RUNTIME_VER,
+            sha256 = P4RUNTIME_SHA,
         )
+
     if not native.existing_rule("com_github_p4lang_p4_constraints"):
         http_archive(
             name = "com_github_p4lang_p4_constraints",
