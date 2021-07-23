@@ -48,9 +48,9 @@ namespace p4rt_server{
       grpc::Status GetForwardingPipelineConfig( grpc::ServerContext* context,
           const p4::v1::GetForwardingPipelineConfigRequest* request,
           p4::v1::GetForwardingPipelineConfigResponse* response);
-      bool SendPacketIn(const absl::optional<std::string>& role_name,
+      bool SendPacketIn(const absl::optional<uint64_t>& role_id,
                         const p4::v1::StreamMessageResponse& response){
-        return controller_manager_->SendStreamMessageToPrimary(role_name, response);
+        return controller_manager_->SendStreamMessageToPrimary(role_id, response);
       }
     };
 

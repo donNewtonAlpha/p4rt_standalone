@@ -153,7 +153,7 @@ grpc::Status P4RtServer::StreamChannel(
           // Returns with an error if the write request was not received from a
           // primary connection
           bool is_primary = controller_manager_
-                                ->AllowRequest(sdn_connection->GetRoleName(),
+                                ->AllowRequest(sdn_connection->GetRoleId(),
                                                sdn_connection->GetElectionId())
                                 .ok();
           if (!is_primary) {
@@ -167,7 +167,7 @@ grpc::Status P4RtServer::StreamChannel(
               if (!status.ok()) {
                 // Get the primary streamchannel and write into the stream.
                 controller_manager_->SendStreamMessageToPrimary(
-                    sdn_connection->GetRoleName(),
+                    sdn_connection->GetRoleId(),
                     GenerateErrorResponse(gutil::StatusBuilder(status)
                                               << "Failed to send packet out.",
                                           request.packet()));

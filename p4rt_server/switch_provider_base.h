@@ -32,8 +32,8 @@ namespace switch_provider{
        * SwitchProviderBase::SendPacketIn 
        * Provided for subclass to send PacketIns to the P4Runtime Controller Application
        */
-      void SendPacketIn (std::string role_name, std::shared_ptr<p4::v1::StreamMessageResponse> response){
-        controller_manager_->SendStreamMessageToPrimary(role_name, *response);
+      void SendPacketIn (absl::optional<uint64_t>& role_id, std::shared_ptr<p4::v1::StreamMessageResponse> response){
+        controller_manager_->SendStreamMessageToPrimary(role_id, *response);
       }
     public:
       /*
