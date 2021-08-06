@@ -2,7 +2,7 @@
  * Copyright 2020 Google LLC
  * Copyright 2020-present Open Networking Foundation
  *
- * SPDX-License-Identifier: Apache-2.0 
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 #ifndef _SDN_CONTROLLER_MANAGER_H_
@@ -16,143 +16,150 @@
 // in version 1.3.0 of p4runtime roles aren't really fleshed out
 // there for we assign at role id of  if no role is present
 #define DEFAULT_ROLE_ID 0
-namespace p4rt_server{
+namespace p4rt_server {
 
 // A connection between a controller and p4rt server.
 class SdnConnection {
- public:
-  SdnConnection(grpc::ServerContext* context,
-                grpc::ServerReaderWriter<p4::v1::StreamMessageResponse,
-                                         p4::v1::StreamMessageRequest>* stream)
-      : initialized_(false), grpc_context_(context), grpc_stream_(stream) {}
+   public:
+    SdnConnection(
+        grpc::ServerContext *context,
+        grpc::ServerReaderWriter<p4::v1::StreamMessageResponse,
+                                 p4::v1::StreamMessageRequest> *stream)
+        : initialized_(false), grpc_context_(context), grpc_stream_(stream) {}
 
-  void Initialize() { initialized_ = true; }
-  bool IsInitialized() const { return initialized_; }
+    void Initialize() { initialized_ = true; }
+    bool IsInitialized() const { return initialized_; }
 
-  void SetElectionId(const absl::optional<absl::uint128>& id);
-  absl::optional<absl::uint128> GetElectionId() const;
+    void SetElectionId(const absl::optional<absl::uint128> &id);
+    absl::optional<absl::uint128> GetElectionId() const;
 
-  void SetRoleId(const absl::optional<uint64_t>& id);
-  absl::optional<uint64_t> GetRoleId() const;
+    void SetRoleId(const absl::optional<uint64_t> &id);
+    absl::optional<uint64_t> GetRoleId() const;
 
-  // Sends back StreamMessageResponse to this controller.
-  void SendStreamMessageResponse(const p4::v1::StreamMessageResponse& response);
+    // Sends back StreamMessageResponse to this controller.
+    void SendStreamMessageResponse(
+        const p4::v1::StreamMessageResponse &response);
 
- private:
-  // The SDN connection should be initialized through arbitration before it can
-  // be used.
-  bool initialized_;
+   private:
+    // The SDN connection should be initialized through arbitration before it
+    // can be used.
+    bool initialized_;
 
-  // SDN connections are made to the P4RT gRPC service based on role types. The
-  // specified role limits the table a connection can write to, and read from.
-  // If role is specified then the connection is assumed to be root, and has
-  // access to all tables.
-  absl::optional<uint64_t> role_id_ = absl::optional<uint64_t>(DEFAULT_ROLE_ID);
-  // Multiple connections can be established per role, but only one connection
-  // (i.e. the primary connection) is allowed to modify state. The primary
-  // connection is determined based on the election ID.
-  absl::optional<absl::uint128> election_id_;
+    // SDN connections are made to the P4RT gRPC service based on role types.
+    // The specified role limits the table a connection can write to, and read
+    // from. If role is specified then the connection is assumed to be root, and
+    // has access to all tables.
+    absl::optional<uint64_t> role_id_ =
+        absl::optional<uint64_t>(DEFAULT_ROLE_ID);
+    // Multiple connections can be established per role, but only one connection
+    // (i.e. the primary connection) is allowed to modify state. The primary
+    // connection is determined based on the election ID.
+    absl::optional<absl::uint128> election_id_;
 
-  // While the gRPC connection is open we keep access to the context & the
-  // read/write stream for communication.
-  grpc::ServerContext* grpc_context_;  // not owned.
-  grpc::ServerReaderWriter<p4::v1::StreamMessageResponse,
-                           p4::v1::StreamMessageRequest>*
-      grpc_stream_;  // not owned.
+    // While the gRPC connection is open we keep access to the context & the
+    // read/write stream for communication.
+    grpc::ServerContext *grpc_context_;  // not owned.
+    grpc::ServerReaderWriter<p4::v1::StreamMessageResponse,
+                             p4::v1::StreamMessageRequest>
+        *grpc_stream_;  // not owned.
 };
 
 class SdnControllerManager {
- public:
-  // TODO: Set device ID through gNMI.
-  SdnControllerManager() : device_id_(183807201) {}
+   public:
+    // TODO: Set device ID through gNMI.
+    SdnControllerManager() : device_id_(183807201) {}
 
-  grpc::Status HandleArbitrationUpdate(
-      const p4::v1::MasterArbitrationUpdate& update, SdnConnection* controller)
-      ABSL_LOCKS_EXCLUDED(lock_);
-  // G3_WARN : ABSL_EXCLUSIVE_LOCKS_REQUIRED(P4RuntimeImpl::server_state_lock_);
+    grpc::Status HandleArbitrationUpdate(
+        const p4::v1::MasterArbitrationUpdate &update,
+        SdnConnection *controller) ABSL_LOCKS_EXCLUDED(lock_);
+    // G3_WARN :
+    // ABSL_EXCLUSIVE_LOCKS_REQUIRED(P4RuntimeImpl::server_state_lock_);
 
-  void Disconnect(SdnConnection* connection) ABSL_LOCKS_EXCLUDED(lock_);
-  // G3_WARN ABSL_EXCLUSIVE_LOCKS_REQUIRED(P4RuntimeImpl::server_state_lock_);
+    void Disconnect(SdnConnection *connection) ABSL_LOCKS_EXCLUDED(lock_);
+    // G3_WARN ABSL_EXCLUSIVE_LOCKS_REQUIRED(P4RuntimeImpl::server_state_lock_);
 
-  grpc::Status AllowRequest(const absl::optional<uint64_t>& role_id,
-                            const absl::optional<absl::uint128>& election_id)
-      ABSL_LOCKS_EXCLUDED(lock_);
+    grpc::Status AllowRequest(const absl::optional<uint64_t> &role_id,
+                              const absl::optional<absl::uint128> &election_id)
+        ABSL_LOCKS_EXCLUDED(lock_);
 
-  grpc::Status AllowRequest(const p4::v1::WriteRequest& request);
-  grpc::Status AllowRequest(
-      const p4::v1::SetForwardingPipelineConfigRequest& request);
+    grpc::Status AllowRequest(const p4::v1::WriteRequest &request);
+    grpc::Status AllowRequest(
+        const p4::v1::SetForwardingPipelineConfigRequest &request);
 
-  bool SendStreamMessageToPrimary(const absl::optional<uint64_t>& role_id,
-                                  const p4::v1::StreamMessageResponse& response)
-      ABSL_LOCKS_EXCLUDED(lock_);
+    bool SendStreamMessageToPrimary(
+        const absl::optional<uint64_t> &role_id,
+        const p4::v1::StreamMessageResponse &response)
+        ABSL_LOCKS_EXCLUDED(lock_);
 
- private:
+   private:
     // Goes through the current list of active connections, and determines if
-  // there has been a change to the primary connection. If there is a change to
-  // the primary connection it will return true. Otherwise it will return false.
-  //
-  // If the election_id argument equals the `election_id_past` for the role this
-  // methods will return true (e.g. if the primary connection was disconneded
-  // and is now reconnecting). If the current primary connection sends an
-  // update, without changing its election ID, this method should NOT be called.
-  bool UpdateToPrimaryConnectionState(
-      const absl::optional<uint64_t>& role_id,
-      const absl::optional<absl::uint128>& election_id)
-      ABSL_EXCLUSIVE_LOCKS_REQUIRED(lock_);
+    // there has been a change to the primary connection. If there is a change
+    // to the primary connection it will return true. Otherwise it will return
+    // false.
+    //
+    // If the election_id argument equals the `election_id_past` for the role
+    // this methods will return true (e.g. if the primary connection was
+    // disconneded and is now reconnecting). If the current primary connection
+    // sends an update, without changing its election ID, this method should NOT
+    // be called.
+    bool UpdateToPrimaryConnectionState(
+        const absl::optional<uint64_t> &role_id,
+        const absl::optional<absl::uint128> &election_id)
+        ABSL_EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  // Goes through the current list of active connections, and returns if one of
-  // them is currently the primary.
-  bool PrimaryConnectionExists(const absl::optional<uint64_t>& role_id)
-      ABSL_EXCLUSIVE_LOCKS_REQUIRED(lock_);
+    // Goes through the current list of active connections, and returns if one
+    // of them is currently the primary.
+    bool PrimaryConnectionExists(const absl::optional<uint64_t> &role_id)
+        ABSL_EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  // Sends an arbitration update to all active connections for a role about the
-  // current primary connection.
-  void InformConnectionsAboutPrimaryChange(
-      const absl::optional<uint64_t>& role_id)
-      ABSL_EXCLUSIVE_LOCKS_REQUIRED(lock_);
+    // Sends an arbitration update to all active connections for a role about
+    // the current primary connection.
+    void InformConnectionsAboutPrimaryChange(
+        const absl::optional<uint64_t> &role_id)
+        ABSL_EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  // Sends an arbitration update to a specific connection.
-  void SendArbitrationResponse(SdnConnection* connection)
-      ABSL_EXCLUSIVE_LOCKS_REQUIRED(lock_);
+    // Sends an arbitration update to a specific connection.
+    void SendArbitrationResponse(SdnConnection *connection)
+        ABSL_EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  // Lock for protecting SdnControllerManager member fields.
-  absl::Mutex lock_;
+    // Lock for protecting SdnControllerManager member fields.
+    absl::Mutex lock_;
 
-  // Device ID is used to ensure all requests are connecting to the intended
-  // place.
-  uint64_t device_id_;
+    // Device ID is used to ensure all requests are connecting to the intended
+    // place.
+    uint64_t device_id_;
 
-  // We maintain a list of all active connections. The P4 runtime spec requires
-  // a number of edge cases based on values existing or not that makes
-  // maintaining these connections any other container difficult. However, we
-  // don't expect a large number of connections so performance shouldn't be
-  // affected.
-  //
-  // Requirements for roles:
-  //  * Each role can have it's own set of primary & backup connections.
-  //  * If no role is specified (NOTE: different than "") the role is assumed to
-  //    be 'root', and as such has access to any table in the P4 application.
-  //
-  // Requirements for election ids:
-  //  * The connection with the highest election ID is the primary.
-  //  * If no election ID is given (NOTE: different than 0) the connection is
-  //    valid, but it cannot ever be primary (i.e. the controller can force a
-  //    connection to be a backup).
-  std::vector<SdnConnection*> connections_ ABSL_GUARDED_BY(lock_);
+    // We maintain a list of all active connections. The P4 runtime spec
+    // requires a number of edge cases based on values existing or not that
+    // makes maintaining these connections any other container difficult.
+    // However, we don't expect a large number of connections so performance
+    // shouldn't be affected.
+    //
+    // Requirements for roles:
+    //  * Each role can have it's own set of primary & backup connections.
+    //  * If no role is specified (NOTE: different than "") the role is assumed
+    //  to
+    //    be 'root', and as such has access to any table in the P4 application.
+    //
+    // Requirements for election ids:
+    //  * The connection with the highest election ID is the primary.
+    //  * If no election ID is given (NOTE: different than 0) the connection is
+    //    valid, but it cannot ever be primary (i.e. the controller can force a
+    //    connection to be a backup).
+    std::vector<SdnConnection *> connections_ ABSL_GUARDED_BY(lock_);
 
-  // We maintain a map of the highest election IDs that have been selected for
-  // the primary connection of a role. Once an election ID is set all new
-  // primary connections for that role must use an election ID that is >= in
-  // value.
-  //
-  // key:   role_id   (0 indicates the default/root role)
-  // value: election ID (no value indicates there has never been a primary
-  //                     connection)
-  absl::flat_hash_map<absl::optional<uint64_t>,
-                      absl::optional<absl::uint128>>
-      election_id_past_by_role_ ABSL_GUARDED_BY(lock_);
+    // We maintain a map of the highest election IDs that have been selected for
+    // the primary connection of a role. Once an election ID is set all new
+    // primary connections for that role must use an election ID that is >= in
+    // value.
+    //
+    // key:   role_id   (0 indicates the default/root role)
+    // value: election ID (no value indicates there has never been a primary
+    //                     connection)
+    absl::flat_hash_map<absl::optional<uint64_t>, absl::optional<absl::uint128>>
+        election_id_past_by_role_ ABSL_GUARDED_BY(lock_);
 };
 
-}  // namespace p4rt_app
+}  // namespace p4rt_server
 
 #endif  // _SDN_CONTROLLER_MANAGER_H_
